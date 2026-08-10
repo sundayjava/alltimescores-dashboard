@@ -34,3 +34,34 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+// 1. Service (API call)
+export async function doSomething(data: RequestType): Promise<ResponseType> {
+  const response = await api.post("/endpoint", data);
+  return response.data;
+}
+
+// 2. Hook (React Query)
+export function useSomething() {
+  return useMutation({
+    mutationFn: (data: RequestType) => doSomething(data),
+    onSuccess: (response) => {
+      // Optional: do something after success
+    },
+  });
+}
+
+// 3. Component (UI)
+const somethingMutation = useSomething();
+
+const handleClick = async () => {
+  try {
+    await somethingMutation.mutateAsync(data);
+    toast.success("Success!");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  }
+};
+
+// Use states: somethingMutation.isPending, .isError, .isSuccess

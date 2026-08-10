@@ -1,26 +1,208 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+
+  --card: #ffffff;
+  --card-foreground: #000000;
+
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+
+  --primary: #000000;
+  --primary-foreground: #e1ff57;
+
+  --secondary: #f5f5f5;
+  --secondary-foreground: #000000;
+
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+
+  --accent: #e1ff57;
+  --accent-foreground: #000000;
+
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #e1ff57;
+
+  --destructive: #ef4444;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #ffffff;
+
+  --card: #18181b;
+  --card-foreground: #ffffff;
+
+  --popover: #18181b;
+  --popover-foreground: #ffffff;
+
+  --primary: #e1ff57;
+  --primary-foreground: #000000;
+
+  --secondary: #27272a;
+  --secondary-foreground: #ffffff;
+
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+
+  --accent: #e1ff57;
+  --accent-foreground: #000000;
+
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #e1ff57;
+
+  --destructive: #ef4444;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-destructive: var(--destructive);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Tiptap Editor Styling */
+  .ProseMirror {
+    outline: none;
+  }
+
+  .ProseMirror p.is-editor-empty:first-child::before {
+    color: var(--muted-foreground);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  /* Better styling for headings */
+  .editor-content .ProseMirror h1 {
+    @apply text-4xl font-bold text-foreground mt-8 mb-4 leading-tight;
+  }
+
+  .editor-content .ProseMirror h2 {
+    @apply text-3xl font-bold text-foreground mt-6 mb-3 leading-tight;
+  }
+
+  .editor-content .ProseMirror h3 {
+    @apply text-2xl font-semibold text-foreground mt-5 mb-2.5 leading-snug;
+  }
+
+  .editor-content .ProseMirror h4 {
+    @apply text-xl font-semibold text-foreground mt-4 mb-2 leading-snug;
+  }
+
+  .editor-content .ProseMirror h5 {
+    @apply text-lg font-medium text-foreground mt-3 mb-1.5 leading-normal;
+  }
+
+  /* Paragraph styling */
+  .editor-content .ProseMirror p {
+    @apply text-base text-foreground/90 leading-relaxed mb-4;
+  }
+
+  /* Lists */
+  .editor-content .ProseMirror ul,
+  .editor-content .ProseMirror ol {
+    @apply pl-6 mb-4;
+  }
+
+  .editor-content .ProseMirror ul li {
+    @apply list-disc mb-2;
+  }
+
+  .editor-content .ProseMirror ol li {
+    @apply list-decimal mb-2;
+  }
+
+  /* Blockquote */
+  .editor-content .ProseMirror blockquote {
+    @apply border-l-4 border-primary/30 pl-4 italic text-muted-foreground my-4;
+  }
+
+  /* Code */
+  .editor-content .ProseMirror code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+
+  .editor-content .ProseMirror pre {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
+  }
+
+  .editor-content .ProseMirror pre code {
+    @apply bg-transparent p-0;
+  }
+
+  /* Horizontal rule */
+  .editor-content .ProseMirror hr {
+    @apply border-t border-border my-8;
+  }
+
+  /* Links */
+  .editor-content .ProseMirror a {
+    @apply text-primary underline underline-offset-2 hover:text-primary/80;
+  }
+
+  /* Images */
+  .editor-content .ProseMirror img {
+    @apply rounded-lg max-w-full h-auto my-4;
+  }
+
+  /* Selection */
+  .editor-content .ProseMirror ::selection {
+    @apply bg-primary/20;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }
