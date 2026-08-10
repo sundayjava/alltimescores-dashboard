@@ -23,9 +23,9 @@ function SelectTrigger({
         "flex h-9 w-full items-center justify-between gap-2 border border-input bg-background px-3 text-sm text-foreground outline-none transition-colors",
         "hover:border-foreground/30",
         "focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring",
-        "data-[popup-open]:border-ring",
+        "data-popup-open:border-ring",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "data-[placeholder]:text-muted-foreground",
+        "data-placeholder:text-muted-foreground",
         className
       )}
       {...props}
@@ -60,7 +60,7 @@ function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "z-50 max-h-64 min-w-[var(--anchor-width)] overflow-y-auto border border-border bg-popover text-popover-foreground shadow-none",
+            "z-50 max-h-64 min-w-(--anchor-width) overflow-y-auto border border-border bg-popover text-popover-foreground shadow-none",
             "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 duration-100",
             "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
             className
@@ -84,8 +84,8 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center py-1.5 pl-7 pr-3 text-sm text-foreground outline-none",
-        "data-[highlighted]:bg-muted",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-highlighted:bg-muted",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}
