@@ -196,6 +196,32 @@
   .editor-content .ProseMirror ::selection {
     @apply bg-primary/20;
   }
+
+  /* Tables */
+  .editor-content .ProseMirror table {
+    @apply w-full border-collapse my-4 table-fixed overflow-hidden;
+  }
+
+  .editor-content .ProseMirror th,
+  .editor-content .ProseMirror td {
+    @apply border border-border px-3 py-2 text-left align-top relative;
+  }
+
+  .editor-content .ProseMirror th {
+    @apply bg-muted font-semibold;
+  }
+
+  .editor-content .ProseMirror .selectedCell {
+    @apply bg-primary/10;
+  }
+
+  .editor-content .ProseMirror .column-resize-handle {
+    @apply absolute right-[-2px] top-0 bottom-[-2px] w-1 bg-primary pointer-events-none;
+  }
+
+  .editor-content .ProseMirror.resize-cursor {
+    cursor: col-resize;
+  }
 }
 
 

@@ -9,13 +9,17 @@ import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import CharacterCount from "@tiptap/extension-character-count";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table-row";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableCell } from "@tiptap/extension-table-cell";
 import { UseFormRegister, UseFormSetValue, useWatch, Control } from "react-hook-form";
 import {
     Bold, Italic, Underline as UnderlineIcon, Strikethrough,
     Heading1, Heading2, Heading3, Heading4, Heading5, List, ListOrdered,
     Quote, Code, Link2, AlignLeft, AlignCenter,
     AlignRight, Undo, Redo, Minus, ImageIcon, FileCode, Type,
-    Unlink, PanelLeft, X,
+    Unlink, PanelLeft, X, Table as TableIcon,
 } from "lucide-react";
 import { ContentSchema } from "@/schemas/content.schema";
 import { cn } from "@/lib/utils";
@@ -267,6 +271,15 @@ export function EditorBody({
                 alignments: ["left", "center", "right"],
             }),
             CharacterCount,
+            Table.configure({
+                resizable: true,
+                HTMLAttributes: {
+                    class: "content-table",
+                },
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
         ],
         []
     );
@@ -304,6 +317,11 @@ export function EditorBody({
             editor.commands.setContent(contentValue ?? "", { emitUpdate: false });
         }
     }, [editor, contentValue]);
+
+    const insertTable = () => {
+        if (!editor) return;
+        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+    };
 
     const addImage = () => {
         if (!editor) return;
@@ -527,6 +545,13 @@ export function EditorBody({
                             title="Horizontal Rule"
                             icon={<Minus className="h-4 w-4" />}
                             label="Divider"
+                        />
+                        <ToolbarItem
+                            onClick={insertTable}
+                            active={editor?.isActive("table")}
+                            title="Insert Table"
+                            icon={<TableIcon className="h-4 w-4" />}
+                            label="Table"
                         />
                     </ToolbarSection>
 

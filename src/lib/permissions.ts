@@ -25,7 +25,6 @@ export type Permission =
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     USER: [
         "view_dashboard",
-        "view_content",
         "view_notifications",
     ],
 
