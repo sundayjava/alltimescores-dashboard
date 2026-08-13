@@ -26,6 +26,9 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaPicker } from "../shared/media-picker";
+import { MediaItem } from "@/types/content";
+import { getMediaUrl } from "@/services/media.service";
 
 interface EditorBodyProps {
     register: UseFormRegister<ContentSchema>;
@@ -323,12 +326,21 @@ export function EditorBody({
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
     };
 
+    const [imagePickerOpen, setImagePickerOpen] = useState(false);
+
     const addImage = () => {
         if (!editor) return;
-        const url = window.prompt("Enter image URL:");
-        if (url) {
-            editor.chain().focus().setImage({ src: url }).run();
-        }
+        setImagePickerOpen(true);
+    };
+
+    const handleImageSelect = (media: MediaItem) => {
+        if (!editor) return;
+        editor
+            .chain()
+            .focus()
+            .setImage({ src: getMediaUrl(media.url), alt: media.alt ?? undefined })
+            .run();
+        setImagePickerOpen(false);
     };
 
     const wordCount = editor?.storage.characterCount?.words() ?? 0;
@@ -648,6 +660,13 @@ export function EditorBody({
                     </div>
                 </div>
             </div>
+
+            <MediaPicker
+                open={imagePickerOpen}
+                folder="contents"
+                onSelect={handleImageSelect}
+                onClose={() => setImagePickerOpen(false)}
+            />
         </div>
     );
 }

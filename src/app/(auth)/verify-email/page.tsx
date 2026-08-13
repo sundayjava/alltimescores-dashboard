@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AuthFormWrapper } from "@/components/auth/auth-form-wrapper";
 import Link from "next/link";
@@ -17,6 +17,14 @@ import { useVerifyEmail } from "@/hooks/auth/use-verify-email";
 type VerificationState = "pending" | "verifying" | "success" | "error";
 
 export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailForm />
+    </Suspense>
+  );
+}
+
+function VerifyEmailForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   

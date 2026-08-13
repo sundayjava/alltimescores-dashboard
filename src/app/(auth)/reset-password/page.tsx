@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/auth/auth-layout";
@@ -17,6 +17,14 @@ import { getErrorMessage } from "@/lib/error-handler";
 import { useResetPassword } from "@/hooks/auth/use-reset-password";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
