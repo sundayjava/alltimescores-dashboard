@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginSchema } from "@/schemas/login.schema";
 import { useLogin } from "@/hooks/auth/use-login";
+import { useGoogleAuth } from "@/hooks/auth/use-google-auth";
+import { useGoogleIdentity } from "@/hooks/auth/use-google-identity";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error-handler";
 
@@ -18,6 +21,22 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const loginMutation = useLogin();
+  const googleAuthMutation = useGoogleAuth();
+
+  const handleGoogleCredential = async (idToken: string) => {
+    try {
+      await googleAuthMutation.mutateAsync({ idToken });
+      toast.success("Welcome back! Login successful.");
+    } catch (error) {
+      console.error(error);
+      const errorMessage = getErrorMessage(error);
+      toast.error(errorMessage);
+    }
+  };
+
+  const { onScriptLoad, promptGoogleSignIn } = useGoogleIdentity({
+    onCredential: handleGoogleCredential,
+  });
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -137,15 +156,22 @@ export function LoginForm() {
       </div>
 
       {/* Social Logins */}
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+        onLoad={onScriptLoad}
+      />
       <div className="pt-2">
         <div className="flex items-center justify-center gap-4">
           {/* Google */}
           <button
             type="button"
-            className="flex h-12 w-12 items-center cursor-pointer justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm"
+            onClick={promptGoogleSignIn}
+            disabled={googleAuthMutation.isPending}
+            className="flex h-12 w-12 items-center cursor-pointer justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Sign in with Google"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5">
+            <svg viewBox="0 0 24 24" className="h-5 w-5"> 
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, SignupSchema } from "@/schemas/signup.schema";
 import { useSignup } from "@/hooks/auth/use-signup";
+import { useGoogleAuth } from "@/hooks/auth/use-google-auth";
+import { useGoogleIdentity } from "@/hooks/auth/use-google-identity";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error-handler";
 
@@ -17,6 +20,22 @@ export function SignupForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const registerMutation = useSignup();
+    const googleAuthMutation = useGoogleAuth();
+
+    const handleGoogleCredential = async (idToken: string) => {
+        try {
+            await googleAuthMutation.mutateAsync({ idToken });
+            toast.success("Welcome! Account created successfully.");
+        } catch (error) {
+            console.error(error);
+            const errorMessage = getErrorMessage(error);
+            toast.error(errorMessage);
+        }
+    };
+
+    const { onScriptLoad, promptGoogleSignIn } = useGoogleIdentity({
+        onCredential: handleGoogleCredential,
+    });
 
     const form = useForm<SignupSchema>({
         resolver: zodResolver(signupSchema),
@@ -215,15 +234,22 @@ export function SignupForm() {
                         Login
                     </Link>
                 </p>
-            </div>
+            </div> 
 
             {/* Social Logins */}
+            <Script
+                src="https://accounts.google.com/gsi/client"
+                strategy="afterInteractive"
+                onLoad={onScriptLoad}
+            />
             <div className="pt-2">
                 <div className="flex items-center justify-center gap-4">
                     {/* Google */}
                     <button
                         type="button"
-                        className="flex h-12 w-12 items-center cursor-pointer justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm"
+                        onClick={promptGoogleSignIn}
+                        disabled={googleAuthMutation.isPending}
+                        className="flex h-12 w-12 items-center cursor-pointer justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Sign in with Google"
                     >
                         <svg viewBox="0 0 24 24" className="h-5 w-5">

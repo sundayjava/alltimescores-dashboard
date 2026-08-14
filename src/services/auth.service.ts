@@ -14,6 +14,8 @@ import {
   ResetPasswordRequest,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
+  GoogleAuthRequest,
+  GoogleAuthResponse,
 } from "@/types/auth";
 
 export async function register(
@@ -32,6 +34,17 @@ export async function login(
 ): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>(
     "/platform/auth/login",
+    payload
+  );
+
+  return data;
+}
+
+export async function googleAuth(
+  payload: GoogleAuthRequest
+): Promise<GoogleAuthResponse> {
+  const { data } = await api.post<GoogleAuthResponse>(
+    "/platform/auth/google",
     payload
   );
 

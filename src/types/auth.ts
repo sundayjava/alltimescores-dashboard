@@ -43,6 +43,20 @@ export interface LoginResponse {
   };
 }
 
+export interface GoogleAuthRequest {
+  idToken: string;
+}
+
+export interface GoogleAuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
 export interface RefreshTokenResponse {
   success: boolean;
   message: string;
