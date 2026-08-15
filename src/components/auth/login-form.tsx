@@ -34,7 +34,7 @@ export function LoginForm() {
     }
   };
 
-  const { onScriptLoad, promptGoogleSignIn } = useGoogleIdentity({
+  const { onScriptLoad, buttonRef } = useGoogleIdentity({
     onCredential: handleGoogleCredential,
   });
 
@@ -164,14 +164,8 @@ export function LoginForm() {
       <div className="pt-2">
         <div className="flex items-center justify-center gap-4">
           {/* Google */}
-          <button
-            type="button"
-            onClick={promptGoogleSignIn}
-            disabled={googleAuthMutation.isPending}
-            className="flex h-12 w-12 items-center cursor-pointer justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Sign in with Google"
-          >
-            <svg viewBox="0 0 24 24" className="h-5 w-5"> 
+          <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors shadow-sm overflow-hidden">
+            <svg viewBox="0 0 24 24" className="h-5 w-5 pointer-events-none">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"
@@ -189,7 +183,13 @@ export function LoginForm() {
                 fill="#EA4335"
               />
             </svg>
-          </button>
+            {/* Real Google button, invisible, layered on top so clicks are trusted by Google */}
+            <div
+              ref={buttonRef}
+              className="absolute inset-0 flex items-center justify-center opacity-0 scale-125 cursor-pointer [&>div]:cursor-pointer"
+              aria-label="Sign in with Google"
+            />
+          </div>
         </div>
       </div>
     </form>
