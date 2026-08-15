@@ -3,13 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getMe } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth-store";
 
-export function useCurrentUser() {
+export function useCurrentUser(options?: { silent?: boolean }) {
     const setAuth = useAuthStore((state) => state.setAuth);
     const clearAuth = useAuthStore((state) => state.clearAuth);
 
     const query = useQuery({
         queryKey: ["me"],
-        queryFn: getMe,
+        queryFn: () => getMe({ silent: options?.silent }),
         retry: false,
     });
 

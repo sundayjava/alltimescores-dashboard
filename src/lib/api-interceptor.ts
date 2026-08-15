@@ -2,6 +2,15 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { api } from "./api";
 import { useAuthStore } from "@/stores/auth-store";
 
+// Opt out of the auto-refresh-and-redirect flow: for calls where a 401 is an
+// expected, benign outcome (e.g. "is there already a session?" on a public
+// page), there's nothing to recover and no session to protect.
+declare module "axios" {
+    export interface AxiosRequestConfig {
+        skipAuthRefresh?: boolean;
+    }
+}
+
 let isRefreshing = false;
 
 let failedQueue: {
@@ -29,7 +38,8 @@ api.interceptors.response.use(
 
         if (
             error.response?.status !== 401 ||
-            originalRequest._retry
+            originalRequest._retry ||
+            originalRequest.skipAuthRefresh
         ) {
             return Promise.reject(error);
         }

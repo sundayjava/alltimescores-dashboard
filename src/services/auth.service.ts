@@ -77,8 +77,10 @@ export async function logout(): Promise<LogoutResponse> {
   return response.data;
 }
 
-export async function getMe(): Promise<MeResponse> {
-  const response = await api.get<MeResponse>("/platform/users/me");
+export async function getMe(options?: { silent?: boolean }): Promise<MeResponse> {
+  const response = await api.get<MeResponse>("/platform/users/me", {
+    skipAuthRefresh: options?.silent,
+  });
   return response.data;
 }
 

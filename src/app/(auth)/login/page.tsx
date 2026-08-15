@@ -10,7 +10,7 @@ import { getSafeRedirectUrl } from "@/lib/redirect";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { isLoading, isSuccess } = useCurrentUser();
+  const { isLoading, isSuccess } = useCurrentUser({ silent: true });
 
   useEffect(() => {
     // Already logged in (valid session cookie): send back to where they
