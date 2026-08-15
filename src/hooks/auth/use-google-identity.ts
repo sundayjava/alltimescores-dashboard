@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 declare global {
     interface Window {
@@ -32,11 +32,28 @@ interface UseGoogleIdentityOptions {
 }
 
 export function useGoogleIdentity({ onCredential }: UseGoogleIdentityOptions) {
-    const initializedRef = useRef(false);
-    const buttonRef = useRef<HTMLDivElement>(null);
+    const [scriptReady, setScriptReady] = useState(false);
+    const buttonElRef = useRef<HTMLDivElement | null>(null);
+    const renderedRef = useRef(false);
 
-    const initialize = useCallback(() => {
-        if (initializedRef.current || !window.google) return;
+    // Renders the real (invisible) Google button. Safe to call multiple
+    // times — it only takes effect once the script has initialized AND the
+    // target div has mounted, whichever of those happens second.
+    const tryRenderButton = useCallback(() => {
+        if (renderedRef.current || !scriptReady || !window.google || !buttonElRef.current) {
+            return;
+        }
+
+        window.google.accounts.id.renderButton(buttonElRef.current, {
+            type: "icon",
+            shape: "circle",
+            size: "large",
+        });
+        renderedRef.current = true;
+    }, [scriptReady]);
+
+    const onScriptLoad = useCallback(() => {
+        if (!window.google) return;
 
         window.google.accounts.id.initialize({
             client_id: "29583412555-3ssu4jimv703spa5tr26tjhv84coeggo.apps.googleusercontent.com",
@@ -44,16 +61,21 @@ export function useGoogleIdentity({ onCredential }: UseGoogleIdentityOptions) {
             use_fedcm_for_prompt: true,
         });
 
-        if (buttonRef.current) {
-            window.google.accounts.id.renderButton(buttonRef.current, {
-                type: "icon",
-                shape: "circle",
-                size: "large",
-            });
-        }
-
-        initializedRef.current = true;
+        setScriptReady(true);
     }, [onCredential]);
 
-    return { onScriptLoad: initialize, buttonRef };
+    // Callback ref: catches the case where the div mounts after the script
+    // already finished loading.
+    const buttonRef = useCallback((node: HTMLDivElement | null) => {
+        buttonElRef.current = node;
+        if (node) tryRenderButton();
+    }, [tryRenderButton]);
+
+    // Catches the case where the div was already mounted before the script
+    // finished loading.
+    useEffect(() => {
+        tryRenderButton();
+    }, [tryRenderButton]);
+
+    return { onScriptLoad, buttonRef };
 }
