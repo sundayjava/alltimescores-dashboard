@@ -64,15 +64,15 @@ export function ContentListPage() {
                     title="Content"
                     description="Manage all your articles, news, and stories."
                 />
-                <Button size="sm" className="gap-1.5 shrink-0"
+                <Button size="sm" className="gap-1.5 cursor-pointer"
                     render={() => (
                         <Link href="/editor/new">
-                            <div className="flex items-center justify-center h-6 w-6 bg-accent">
+                            <div className="flex items-center justify-center h-8 w-8 bg-accent rounded-lg">
                                 <Plus className="h-3.5 w-3.5 text-black" />
                             </div>
                         </Link>
                     )} />
-            </div> 
+            </div>
 
             {/* Table */}
             <ContentTable

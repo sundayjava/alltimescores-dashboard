@@ -123,7 +123,7 @@ export function ContentTypeTable({
                 className={cn(
                   "px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
                   isSelected
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >

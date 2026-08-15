@@ -164,7 +164,7 @@ export function MediaUploadZone({ isPending, progress, onUpload }: MediaUploadZo
                             className={cn(
                                 "px-3 py-1 rounded-md text-xs font-medium transition-colors",
                                 folder === value
-                                    ? "bg-primary text-primary-foreground"
+                                    ? "bg-accent text-accent-foreground"
                                     : "border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
                             )}
                         >

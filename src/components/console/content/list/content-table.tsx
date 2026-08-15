@@ -484,7 +484,7 @@ export function ContentTable({
                                         className={cn(
                                             "h-7 w-7 rounded-md text-xs font-medium transition-colors",
                                             page === p
-                                                ? "bg-primary text-primary-foreground"
+                                                ? "bg-accent text-accent-foreground"
                                                 : "text-muted-foreground hover:bg-muted"
                                         )}
                                     >

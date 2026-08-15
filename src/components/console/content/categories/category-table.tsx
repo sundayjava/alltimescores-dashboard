@@ -41,7 +41,7 @@ function FilterTab({
       className={cn(
         "px-3 py-1 text-xs font-medium rounded-md transition-colors",
         active
-          ? "bg-primary text-primary-foreground"
+          ? "bg-accent text-accent-foreground"
           : "text-muted-foreground hover:text-foreground hover:bg-muted"
       )}
     >
@@ -364,7 +364,7 @@ export function CategoryTable({
                     className={cn(
                       "h-7 w-7 rounded-md text-xs font-medium transition-colors",
                       page === p
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
