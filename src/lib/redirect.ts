@@ -1,8 +1,13 @@
-const ALLOWED_REDIRECT_HOSTS = [
-    "alltimescores.com",
-    "www.alltimescores.com",
-    "localhost",
-];
+const ALLOWED_REDIRECT_ROOT = "alltimescores.com";
+const ALLOWED_REDIRECT_HOSTS = ["localhost"];
+
+function isAllowedRedirectHost(hostname: string): boolean {
+    return (
+        hostname === ALLOWED_REDIRECT_ROOT ||
+        hostname.endsWith(`.${ALLOWED_REDIRECT_ROOT}`) ||
+        ALLOWED_REDIRECT_HOSTS.includes(hostname)
+    );
+}
 
 export function getRedirectParam(): string | null {
     if (typeof window === "undefined") return null;
@@ -17,7 +22,7 @@ export function getSafeRedirectUrl(): string | null {
         const url = new URL(raw);
 
         if (url.protocol !== "https:" && url.protocol !== "http:") return null;
-        if (!ALLOWED_REDIRECT_HOSTS.includes(url.hostname)) return null;
+        if (!isAllowedRedirectHost(url.hostname)) return null;
 
         return url.toString();
     } catch {
