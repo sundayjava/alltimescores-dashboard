@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { googleAuth } from "@/services/auth.service";
 import { GoogleAuthRequest } from "@/types/auth";
 import { useAuthStore } from "@/stores/auth-store";
+import { getSafeRedirectUrl } from "@/lib/redirect";
 
 export function useGoogleAuth() {
     const router = useRouter();
@@ -11,13 +12,14 @@ export function useGoogleAuth() {
     return useMutation({
         mutationFn: (data: GoogleAuthRequest) => googleAuth(data),
         onSuccess: (response) => {
-            setAuth(
-                response.data.user,
-                response.data.accessToken,
-                response.data.refreshToken
-            );
+            setAuth(response.data);
 
-            router.push("/console");
+            const safeRedirect = getSafeRedirectUrl();
+            if (safeRedirect) {
+                window.location.href = safeRedirect;
+            } else {
+                router.push("/console");
+            }
         },
     });
 }

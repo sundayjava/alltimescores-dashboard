@@ -9,13 +9,13 @@ import {
   VerifyEmailResponse,
   VerifyEmailRequest,
   LogoutResponse,
-  LogoutRequest,
   ResetPasswordResponse,
   ResetPasswordRequest,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
   GoogleAuthRequest,
   GoogleAuthResponse,
+  MeResponse,
 } from "@/types/auth";
 
 export async function register(
@@ -72,13 +72,13 @@ export async function verifyEmail(
   return response.data;
 }
 
-export async function logout(
-  data: LogoutRequest
-): Promise<LogoutResponse> {
-  const response = await api.post<LogoutResponse>(
-    "/platform/auth/logout",
-    data
-  );
+export async function logout(): Promise<LogoutResponse> {
+  const response = await api.post<LogoutResponse>("/platform/auth/logout");
+  return response.data;
+}
+
+export async function getMe(): Promise<MeResponse> {
+  const response = await api.get<MeResponse>("/platform/users/me");
   return response.data;
 }
 

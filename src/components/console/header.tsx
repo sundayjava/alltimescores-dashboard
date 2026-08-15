@@ -2,7 +2,7 @@
 
 import { Menu, Bell, User, LogOut, Settings, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthStore, selectUser, selectHasHydrated } from "@/stores/auth-store";
+import { useAuthStore, selectUser } from "@/stores/auth-store";
 import { useLogout } from "@/hooks/auth/use-logout";
 import { useRouter } from "next/navigation";
 import { hasPermission } from "@/lib/permissions";
@@ -16,10 +16,9 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
     const user = useAuthStore(selectUser);
-    const hasHydrated = useAuthStore(selectHasHydrated);
     const logoutMutation = useLogout();
 
-    if (!hasHydrated || !user) return null;
+    if (!user) return null;
 
     const canViewSettings = hasPermission(user.role, "view_settings");
 

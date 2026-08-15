@@ -1,36 +1,25 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { api } from "./api";
-import { RefreshTokenResponse } from "@/types/auth";
 import { useAuthStore } from "@/stores/auth-store";
 
 let isRefreshing = false;
 
 let failedQueue: {
-    resolve: (token: string) => void;
+    resolve: () => void;
     reject: (error: unknown) => void;
 }[] = [];
 
-function processQueue(error: unknown, token?: string): void {
+function processQueue(error: unknown): void {
     failedQueue.forEach((promise) => {
         if (error) {
             promise.reject(error);
         } else {
-            promise.resolve(token!);
+            promise.resolve();
         }
     });
 
     failedQueue = [];
 }
-
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    const token = useAuthStore.getState().accessToken;
-
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-});
 
 api.interceptors.response.use(
     (response) => response,
@@ -50,12 +39,7 @@ api.interceptors.response.use(
         if (isRefreshing) {
             return new Promise((resolve, reject) => {
                 failedQueue.push({
-                    resolve: (token: string) => {
-                        if (originalRequest.headers) {
-                            originalRequest.headers.Authorization = `Bearer ${token}`;
-                        }
-                        resolve(api(originalRequest));
-                    },
+                    resolve: () => resolve(api(originalRequest)),
                     reject,
                 });
             });
@@ -64,34 +48,15 @@ api.interceptors.response.use(
         isRefreshing = true;
 
         try {
-            const refreshToken = useAuthStore.getState().refreshToken;
-
-            if (!refreshToken) {
-                throw new Error("No refresh token available");
-            }
-
-            const { data } = await axios.post<RefreshTokenResponse>(
+            // Access/refresh tokens live in httpOnly cookies; the server rotates
+            // them via Set-Cookie, so there's nothing to read from the response body.
+            await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/platform/auth/refresh`,
-                {
-                    refreshToken,
-                }
+                {},
+                { withCredentials: true }
             );
 
-            const newAccessToken = data.data.accessToken;
-            const newRefreshToken = data.data.refreshToken;
-
-            // Store both new tokens in Zustand store
-            useAuthStore.getState().setTokens(newAccessToken, newRefreshToken);
-
-            if (api.defaults.headers.common) {
-                api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
-            }
-
-            processQueue(null, newAccessToken);
-
-            if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            }
+            processQueue(null);
 
             return api(originalRequest);
         } catch (refreshError) {

@@ -36,11 +36,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   success: boolean;
   message: string;
-  data: {
-    user: User;
-    accessToken: string;
-    refreshToken: string;
-  };
+  data: User;
 }
 
 export interface GoogleAuthRequest {
@@ -50,20 +46,18 @@ export interface GoogleAuthRequest {
 export interface GoogleAuthResponse {
   success: boolean;
   message: string;
-  data: {
-    user: User;
-    accessToken: string;
-    refreshToken: string;
-  };
+  data: User;
 }
 
-export interface RefreshTokenResponse {
+export interface MeResponse {
   success: boolean;
   message: string;
-  data: {
-    accessToken: string;
-    refreshToken: string;
-  };
+  data: User;
+}
+
+export interface RefreshResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface ApiErrorResponse {
@@ -101,10 +95,6 @@ export interface VerifyEmailResponse {
   data?: {
     message: string;
   };
-}
-
-export interface LogoutRequest {
-  refreshToken: string;
 }
 
 export interface LogoutResponse {

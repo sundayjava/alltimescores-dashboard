@@ -159,7 +159,7 @@ export function LoginForm() {
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={onScriptLoad}
+        onReady={onScriptLoad}
       />
       <div className="pt-2">
         <div className="flex items-center justify-center gap-4">

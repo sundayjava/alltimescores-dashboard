@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore, selectIsAuthenticated, selectHasHydrated } from "@/stores/auth-store";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 
 export default function EditorLayout({
   children,
@@ -10,16 +10,15 @@ export default function EditorLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const isAuthenticated = useAuthStore(selectIsAuthenticated);
-  const hasHydrated = useAuthStore(selectHasHydrated);
+  const { isLoading, isError } = useCurrentUser();
 
   useEffect(() => {
-    if (hasHydrated && !isAuthenticated) {
+    if (isError) {
       router.push("/login");
     }
-  }, [hasHydrated, isAuthenticated, router]);
+  }, [isError, router]);
 
-  if (!hasHydrated) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
@@ -27,7 +26,7 @@ export default function EditorLayout({
     );
   }
 
-  if (!isAuthenticated) {
+  if (isError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Redirecting...</p>

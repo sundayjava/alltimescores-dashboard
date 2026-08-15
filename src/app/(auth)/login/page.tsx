@@ -2,25 +2,31 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore, selectIsAuthenticated, selectHasHydrated } from "@/stores/auth-store";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { AuthFormWrapper } from "@/components/auth/auth-form-wrapper";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { LoginForm } from "@/components/auth/login-form";
+import { getSafeRedirectUrl } from "@/lib/redirect";
 
 export default function LoginPage() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore(selectIsAuthenticated);
-  const hasHydrated = useAuthStore(selectHasHydrated);
+  const { isLoading, isSuccess } = useCurrentUser();
 
   useEffect(() => {
-    // Redirect to dashboard if already logged in
-    if (hasHydrated && isAuthenticated) {
-      router.push("/console");
+    // Already logged in (valid session cookie): send back to where they
+    // came from, or the dashboard
+    if (isSuccess) {
+      const safeRedirect = getSafeRedirectUrl();
+      if (safeRedirect) {
+        window.location.href = safeRedirect;
+      } else {
+        router.push("/console");
+      }
     }
-  }, [hasHydrated, isAuthenticated, router]);
+  }, [isSuccess, router]);
 
-  // Show loading during hydration
-  if (!hasHydrated) {
+  // Show loading while we check for an existing session
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
@@ -28,8 +34,8 @@ export default function LoginPage() {
     );
   }
 
-  // Don't show login form if authenticated (will redirect)
-  if (isAuthenticated) {
+  // Don't show login form if already authenticated (will redirect)
+  if (isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Redirecting...</p>

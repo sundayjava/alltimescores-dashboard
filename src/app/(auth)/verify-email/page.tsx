@@ -30,6 +30,8 @@ function VerifyEmailForm() {
   
   const token = searchParams.get("token");
   const email = searchParams.get("email") || "";
+  const redirect = searchParams.get("redirect");
+  const loginUrl = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : "/login";
   
   const [state, setState] = useState<VerificationState>("pending");
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,9 +58,9 @@ function VerifyEmailForm() {
     }
     
     if (state === "success" && countdown === 0) {
-      router.push("/login");
+      router.push(loginUrl);
     }
-  }, [state, countdown, router]);
+  }, [state, countdown, router, loginUrl]);
 
   // Confetti animation on success
   const triggerConfetti = () => {
@@ -178,7 +180,7 @@ function VerifyEmailForm() {
               </p>
               
               <Button
-                onClick={() => router.push("/login")}
+                onClick={() => router.push(loginUrl)}
                 className="w-full"
               >
                 Go to Login Now
@@ -251,7 +253,7 @@ function VerifyEmailForm() {
 
             <div className="text-center">
               <Link
-                href="/login"
+                href={loginUrl}
                 className="text-sm font-medium text-foreground hover:underline"
               >
                 Back to Login

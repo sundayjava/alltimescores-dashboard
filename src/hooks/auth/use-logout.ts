@@ -6,17 +6,10 @@ import { useAuthStore } from "@/stores/auth-store";
 export function useLogout() {
   const router = useRouter();
   const clearAuth = useAuthStore((state) => state.clearAuth);
-  const refreshToken = useAuthStore((state) => state.refreshToken);
 
   return useMutation({
-    mutationFn: () => {
-      if (!refreshToken) {
-        throw new Error("No refresh token found");
-      }
-      return logout({ refreshToken });
-    },
+    mutationFn: () => logout(),
     onSuccess: () => {
-      // Clear local state after server confirms
       clearAuth();
       router.push("/login");
     },
