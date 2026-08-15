@@ -6,6 +6,7 @@ import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { AuthFormWrapper } from "@/components/auth/auth-form-wrapper";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { LoginForm } from "@/components/auth/login-form";
+import { PageSpinner } from "@/components/ui/spinner";
 import { getSafeRedirectUrl } from "@/lib/redirect";
 
 export default function LoginPage() {
@@ -27,20 +28,12 @@ export default function LoginPage() {
 
   // Show loading while we check for an existing session
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
+    return <PageSpinner />;
   }
 
   // Don't show login form if already authenticated (will redirect)
   if (isSuccess) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Redirecting...</p>
-      </div>
-    );
+    return <PageSpinner />;
   }
 
   return (

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
+import { PageSpinner } from "@/components/ui/spinner";
 
 export default function EditorLayout({
   children,
@@ -18,20 +19,8 @@ export default function EditorLayout({
     }
   }, [isError, router]);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Redirecting...</p>
-      </div>
-    );
+  if (isLoading || isError) {
+    return <PageSpinner />;
   }
 
   return <>{children}</>;
