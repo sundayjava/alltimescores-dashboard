@@ -16,6 +16,8 @@ import {
   GoogleAuthRequest,
   GoogleAuthResponse,
   MeResponse,
+  DeleteAccountRequest,
+  DeleteAccountResponse,
 } from "@/types/auth";
 
 export async function register(
@@ -100,6 +102,16 @@ export async function resetPassword(
   const response = await api.post<ResetPasswordResponse>(
     "/platform/auth/reset-password",
     data
+  );
+  return response.data;
+}
+
+export async function deleteMe(
+  payload?: DeleteAccountRequest
+): Promise<DeleteAccountResponse> {
+  const response = await api.delete<DeleteAccountResponse>(
+    "/platform/users/me",
+    { data: payload }
   );
   return response.data;
 }

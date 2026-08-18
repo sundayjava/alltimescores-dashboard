@@ -1,14 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { Menu, Bell, User, LogOut, Settings, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore, selectUser } from "@/stores/auth-store";
 import { useLogout } from "@/hooks/auth/use-logout";
+import { useDeleteAccount } from "@/hooks/auth/use-delete-account";
 import { useRouter } from "next/navigation";
 import { hasPermission } from "@/lib/permissions";
+import { getApiErrorMessage } from "@/lib/error-handler";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "../ui/dropdown-menu";
 import { UserMenu } from "./user-menu";
+import { DeleteAccountDialog } from "./delete-account-dialog";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -17,6 +21,8 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
     const user = useAuthStore(selectUser);
     const logoutMutation = useLogout();
+    const deleteAccountMutation = useDeleteAccount();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     if (!user) return null;
 
@@ -24,6 +30,10 @@ export function Header({ onMenuClick }: HeaderProps) {
 
     const handleLogout = () => {
         logoutMutation.mutate();
+    };
+
+    const handleConfirmDeleteAccount = (password?: string) => {
+        deleteAccountMutation.mutate({ password });
     };
 
     return (
@@ -89,10 +99,30 @@ export function Header({ onMenuClick }: HeaderProps) {
                             canViewSettings={canViewSettings}
                             isPendingLogout={logoutMutation.isPending}
                             onLogout={handleLogout}
+                            onDeleteAccount={() => setDeleteDialogOpen(true)}
                         />
                     </DropdownMenu>
                 </div>
             </div>
+
+            <DeleteAccountDialog
+                open={deleteDialogOpen}
+                user={user}
+                isPending={deleteAccountMutation.isPending}
+                errorMessage={
+                    deleteAccountMutation.isError
+                        ? getApiErrorMessage(
+                              deleteAccountMutation.error,
+                              "Failed to delete account."
+                          )
+                        : null
+                }
+                onConfirm={handleConfirmDeleteAccount}
+                onClose={() => {
+                    setDeleteDialogOpen(false);
+                    deleteAccountMutation.reset();
+                }}
+            />
         </header>
     );
 }

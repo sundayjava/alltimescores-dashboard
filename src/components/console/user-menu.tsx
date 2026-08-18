@@ -6,6 +6,7 @@ import {
     Settings,
     HelpCircle,
     LogOut,
+    Trash2,
 } from "lucide-react";
 
 import {
@@ -23,6 +24,7 @@ interface UserMenuProps {
     canViewSettings: boolean;
     isPendingLogout: boolean;
     onLogout: () => void;
+    onDeleteAccount: () => void;
 }
 
 export function UserMenu({
@@ -30,6 +32,7 @@ export function UserMenu({
     canViewSettings,
     isPendingLogout,
     onLogout,
+    onDeleteAccount,
 }: UserMenuProps) {
     const router = useRouter();
 
@@ -85,6 +88,19 @@ export function UserMenu({
                 >
                     <LogOut className="mr-2 h-4 w-4" />
                     {isPendingLogout ? "Logging out..." : "Log out"}
+                </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+                <DropdownMenuItem
+                    variant="destructive"
+                    onClick={onDeleteAccount}
+                    className="cursor-pointer"
+                >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete account
                 </DropdownMenuItem>
             </DropdownMenuGroup>
         </DropdownMenuContent>

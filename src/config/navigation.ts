@@ -3,15 +3,13 @@ import {
   LayoutDashboard,
   Users,
   FileText,
-  Bell,
-  Settings,
-  BarChart,
   Tag,
   Image,
   FileEdit,
   LucideIcon,
   Layers,
   FolderTree,
+  Megaphone,
 } from "lucide-react";
 
 export interface NavItem {
@@ -73,16 +71,10 @@ export const navigation: NavItem[] = [
     icon: Users,
     permission: "view_users",
   },
-  // {
-  //   title: "Notifications",
-  //   href: "/console/notifications",
-  //   icon: Bell,
-  //   badge: "3",
-  // },
-  // {
-  //   title: "Settings",
-  //   href: "/console/settings",
-  //   icon: Settings,
-  //   permission: "view_settings",
-  // },
+  {
+    title: "Broadcasts",
+    href: "/console/broadcasts",
+    icon: Megaphone,
+    permission: "view_settings",
+  },
 ];

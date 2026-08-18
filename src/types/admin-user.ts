@@ -38,15 +38,18 @@ export interface AdminUserResponse {
   data: AdminUserDetail;
 }
 
-export interface AdminUserQueryParams {
+export interface AdminUserListQueryParams {
   page?: number;
   limit?: number;
   search?: string;
   role?: UserRole;
   plan?: UserPlan;
-  active?: boolean;
   sortBy?: "createdAt" | "firstName" | "lastName" | "email";
   order?: "asc" | "desc";
+}
+
+export interface AdminUserQueryParams extends AdminUserListQueryParams {
+  active?: boolean;
 }
 
 export interface UpdateUserRoleRequest {

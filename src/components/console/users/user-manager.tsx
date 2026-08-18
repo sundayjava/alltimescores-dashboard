@@ -40,12 +40,11 @@ export function UserManager() {
     search: search || undefined,
     role: roleFilter === "all" ? undefined : roleFilter,
     plan: planFilter === "all" ? undefined : planFilter,
-    active: activeFilter === "all" ? undefined : activeFilter === "active",
     sortBy: sort.field ?? undefined,
     order: sort.field ? sort.direction : undefined,
   };
 
-  const { data, isLoading, isFetching } = useAdminUsers(queryParams);
+  const { data, isLoading, isFetching } = useAdminUsers(activeFilter, queryParams);
   const { data: activeAdminCount } = useActiveAdminCount();
 
   const users = data?.data.users ?? [];

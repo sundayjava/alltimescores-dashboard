@@ -3,6 +3,7 @@ import {
   AdminUsersResponse,
   AdminUserResponse,
   AdminUserQueryParams,
+  AdminUserListQueryParams,
   UpdateUserRoleRequest,
   UpdateUserPlanRequest,
   UpdateUserStatusRequest,
@@ -10,17 +11,39 @@ import {
 
 const BASE = "/platform/admin/users";
 
+// Cache-bust with a unique param on every call. The browser was
+// conditionally revalidating these URLs (sending If-None-Match) and the
+// server sometimes answers 304 with a cached body that doesn't reflect
+// the current filters — a server-side ETag that likely isn't scoped to
+// query params. Varying the URL guarantees no cache entry can match, so
+// every request gets a genuine fresh response regardless of that.
+function withCacheBust<T extends object>(params?: T) {
+  return { ...params, _: Date.now() };
+}
+
 export async function getAdminUsers(
   params?: AdminUserQueryParams
 ): Promise<AdminUsersResponse> {
-  // Cache-bust with a unique param on every call. The browser was
-  // conditionally revalidating this URL (sending If-None-Match) and the
-  // server sometimes answers 304 with a cached body that doesn't reflect
-  // the current filters — a server-side ETag that likely isn't scoped to
-  // query params. Varying the URL guarantees no cache entry can match, so
-  // every request gets a genuine fresh response regardless of that.
   const { data } = await api.get<AdminUsersResponse>(BASE, {
-    params: { ...params, _: Date.now() },
+    params: withCacheBust(params),
+  });
+  return data;
+}
+
+export async function getActiveAdminUsers(
+  params?: AdminUserListQueryParams
+): Promise<AdminUsersResponse> {
+  const { data } = await api.get<AdminUsersResponse>(`${BASE}/active`, {
+    params: withCacheBust(params),
+  });
+  return data;
+}
+
+export async function getInactiveAdminUsers(
+  params?: AdminUserListQueryParams
+): Promise<AdminUsersResponse> {
+  const { data } = await api.get<AdminUsersResponse>(`${BASE}/inactive`, {
+    params: withCacheBust(params),
   });
   return data;
 }
