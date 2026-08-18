@@ -38,7 +38,7 @@ export function AuthPreview() {
                 {/* Logo Section */}
                 <div className="flex flex-col items-center space-y-1">
                     <div className="flex h-32 w-32 items-center justify-center">
-                        <svg viewBox="0 0 100 100" className="h-full w-full text-[#e0ff57]">
+                        <svg viewBox="0 0 100 100" className="h-full w-full text-[#FF2D55]">
                             <path
                                 d="M50 10 L90 90 L70 90 L50 50 L30 90 L10 90 Z"
                                 fill="currentColor"

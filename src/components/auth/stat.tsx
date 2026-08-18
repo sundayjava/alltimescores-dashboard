@@ -10,7 +10,7 @@ export function Stat({ value, label }: StatProps) {
                 {value}
             </h3>
 
-            <p className="text-xs leading-5 text-[#e1ff57]/80">
+            <p className="text-xs leading-5 text-[#FF2D55]/80">
                 {label}
             </p>
         </div>

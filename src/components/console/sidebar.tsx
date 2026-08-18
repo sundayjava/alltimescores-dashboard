@@ -70,7 +70,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               isChild ? "pl-8" : "",
               active
-                ? "bg-primary/5 text-primary"
+                ? "bg-accent/10 text-accent"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -78,7 +78,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <item.icon className="h-4 w-4" />
               <span>{item.title}</span>
               {item.badge && (
-                <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
                   {item.badge}
                 </span>
               )}
@@ -108,14 +108,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
           isChild ? "pl-8" : "",
           active
-            ? "bg-primary/10 text-primary"
+            ? "bg-accent/10 text-accent"
             : "text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >
         <item.icon className="h-4 w-4" />
         <span>{item.title}</span>
         {item.badge && (
-          <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+          <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
             {item.badge}
           </span>
         )}
@@ -144,7 +144,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <div className="flex items-center gap-2">
             <span className="text-base font-bold">{user.firstName} {user.lastName}</span>
-            <div className="flex items-center bg-primary/5 px-2 py-0.5 rounded-full">
+            <div className="flex items-center bg-accent/10 px-2 py-0.5 rounded-full">
               <p className="truncate text-xs text-muted-foreground">{user.role}</p>
             </div>
           </div>

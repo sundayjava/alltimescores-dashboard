@@ -9,8 +9,8 @@ export function AuthLogo() {
         >
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-black dark:bg-white/10 p-2">
                 <Image
-                    src="/logo.png"
-                    alt="AllTimeScores"
+                    src="/logo2.png"
+                    alt="AllTimeScores" 
                     width={32}
                     height={32}
                     className="h-8 w-8"

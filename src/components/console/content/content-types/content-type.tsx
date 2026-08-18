@@ -140,13 +140,11 @@ export function ContentTypeManager() {
           description="Manage the content types available across your CMS."
         />
         <Button
-          size="sm"
+          size="icon-sm"
           onClick={() => setCreateOpen(true)}
-          className="gap-1.5 cursor-pointer text-secondary hover:text-secondary/70"
+          className="cursor-pointer"
         >
-          <div className="flex items-center justify-center">
-            <Plus className="h-3.5 w-3.5 text-black" />
-          </div>
+          <Plus className="h-3.5 w-3.5" />
         </Button>
       </div>
 

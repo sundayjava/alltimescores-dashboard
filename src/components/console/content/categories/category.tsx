@@ -145,10 +145,8 @@ export function CategoryManager() {
           title="Categories"
           description="Manage and organise your content categories."
         />
-        <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5 cursor-pointer">
-          <div className="flex items-center justify-center">
-            <Plus className="h-3.5 w-3.5 text-black" />
-          </div>
+        <Button size="icon-sm" onClick={() => setCreateOpen(true)} className="cursor-pointer">
+          <Plus className="h-3.5 w-3.5" />
         </Button>
       </div>
 
