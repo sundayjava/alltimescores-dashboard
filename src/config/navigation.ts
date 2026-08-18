@@ -10,6 +10,7 @@ import {
   Layers,
   FolderTree,
   Megaphone,
+  BookOpen,
 } from "lucide-react";
 
 export interface NavItem {
@@ -75,6 +76,12 @@ export const navigation: NavItem[] = [
     title: "Broadcasts",
     href: "/console/broadcasts",
     icon: Megaphone,
+    permission: "view_settings",
+  },
+  {
+    title: "API Docs",
+    href: "/docs/football-api",
+    icon: BookOpen,
     permission: "view_settings",
   },
 ];
