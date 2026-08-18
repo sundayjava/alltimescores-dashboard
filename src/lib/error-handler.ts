@@ -34,6 +34,17 @@ export function getApiErrorMessage(
   if (error instanceof AxiosError) {
     const data = error.response?.data;
 
+    // Checked before the body shapes below: the server's own 429 body is generic
+    // ("Too many requests, please try again later"), whereas Retry-After gives us
+    // an exact wait. CORS now exposes that header to scripts, so prefer it.
+    if (error.response?.status === 429) {
+      const seconds = Number(error.response.headers?.["retry-after"]);
+
+      return Number.isFinite(seconds) && seconds > 0
+        ? `Too many requests. Try again in ${seconds} second${seconds === 1 ? "" : "s"}.`
+        : "Too many requests. Please wait a moment and try again.";
+    }
+
     // Try common server error shapes
     if (typeof data?.message === "string") return data.message;
     if (typeof data?.error === "string") return data.error;

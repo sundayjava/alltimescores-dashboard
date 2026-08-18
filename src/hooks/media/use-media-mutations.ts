@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { uploadMedia, deleteMedia } from "@/services/media.service";
 import { MediaFolder } from "@/types/media";
 import { MEDIA_KEYS } from "./use-media";
+import { getApiErrorMessage } from "@/lib/error-handler";
 
 export function useUploadMedia() {
     const queryClient = useQueryClient();
@@ -17,8 +18,8 @@ export function useUploadMedia() {
             toast.success("Image uploaded successfully.");
             setProgress(0);
         },
-        onError: () => {
-            toast.error("Failed to upload image. Please try again.");
+        onError: (error) => {
+            toast.error(getApiErrorMessage(error, "Failed to upload image. Please try again."));
             setProgress(0);
         },
     });
