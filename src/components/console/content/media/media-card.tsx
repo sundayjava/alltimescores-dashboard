@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Trash2, ExternalLink } from "lucide-react";
+import { Copy, Check, Trash2, ExternalLink, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Media } from "@/types/media";
 import { getMediaUrl } from "@/services/media.service";
@@ -16,9 +16,10 @@ interface MediaCardProps {
     media: Media;
     canDelete: boolean;
     onDelete: (media: Media) => void;
+    onOpen: (media: Media) => void;
 }
 
-export function MediaCard({ media, canDelete, onDelete }: MediaCardProps) {
+export function MediaCard({ media, canDelete, onDelete, onOpen }: MediaCardProps) {
     const [copied, setCopied] = useState(false);
     const fullUrl = getMediaUrl(media.url);
 
@@ -30,7 +31,19 @@ export function MediaCard({ media, canDelete, onDelete }: MediaCardProps) {
     };
 
     return (
-        <div className="group relative rounded-xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-all duration-150">
+        <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onOpen(media)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onOpen(media);
+                }
+            }}
+            title={media.caption ?? media.originalName}
+            className="group relative rounded-xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
             {/* Thumbnail */}
             <div className="relative aspect-square bg-muted/40 overflow-hidden">
                 <img
@@ -42,6 +55,14 @@ export function MediaCard({ media, canDelete, onDelete }: MediaCardProps) {
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-background/75 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onOpen(media); }}
+                        title="Details"
+                        className="flex items-center justify-center h-8 w-8 rounded-lg bg-card border border-border shadow-sm hover:bg-muted transition-colors"
+                    >
+                        <Info className="h-3.5 w-3.5" />
+                    </button>
+
                     <button
                         onClick={handleCopy}
                         title="Copy URL"

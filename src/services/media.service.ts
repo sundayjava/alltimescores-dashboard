@@ -1,5 +1,12 @@
 import { api } from "@/lib/api";
-import { Media, MediaFolder, MediaListResponse, MediaQueryParams } from "@/types/media";
+import {
+    Media,
+    MediaFolder,
+    MediaListResponse,
+    MediaMetadata,
+    MediaQueryParams,
+    MEDIA_METADATA_FIELDS,
+} from "@/types/media";
 
 const BASE = "/cms/media";
 
@@ -7,10 +14,20 @@ const BASE = "/cms/media";
 export async function uploadMedia(
     file: File,
     folder: MediaFolder,
-    onProgress?: (percent: number) => void
+    onProgress?: (percent: number) => void,
+    metadata?: MediaMetadata
 ): Promise<Media> {
     const formData = new FormData();
     formData.append("image", file);
+
+    // Every metadata field is optional; "" is accepted and stored as NULL, so we
+    // only skip fields the caller never set.
+    if (metadata) {
+        for (const field of MEDIA_METADATA_FIELDS) {
+            const value = metadata[field];
+            if (value !== undefined) formData.append(field, value);
+        }
+    }
 
     const { data } = await api.post<{ success: boolean; data: Media }>(
         `${BASE}?folder=${folder}`,
@@ -37,6 +54,18 @@ export async function getMedia(params?: MediaQueryParams): Promise<MediaListResp
 
 export async function getMediaById(id: string): Promise<Media> {
     const { data } = await api.get<{ success: boolean; data: Media }>(`${BASE}/${id}`);
+    return data.data;
+}
+
+/**
+ * Edits metadata on an already-uploaded image. JSON, not multipart — the file
+ * itself never changes. Omitted fields stay as they are; "" clears a field.
+ */
+export async function updateMedia(id: string, metadata: MediaMetadata): Promise<Media> {
+    const { data } = await api.patch<{ success: boolean; data: Media }>(
+        `${BASE}/${id}`,
+        metadata
+    );
     return data.data;
 }
 

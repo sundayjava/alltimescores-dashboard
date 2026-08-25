@@ -4,12 +4,17 @@ import { useState, useCallback } from "react";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore, selectUser } from "@/stores/auth-store";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission, isRoleAtLeast } from "@/lib/permissions";
 import { useMedia } from "@/hooks/media/use-media";
-import { useUploadMedia, useDeleteMedia } from "@/hooks/media/use-media-mutations";
-import { Media, MediaFolder } from "@/types/media";
+import {
+  useUploadMedia,
+  useUpdateMedia,
+  useDeleteMedia,
+} from "@/hooks/media/use-media-mutations";
+import { Media, MediaFolder, MediaMetadata } from "@/types/media";
 import { MediaGrid } from "./media-grid";
 import { MediaUploadDialog } from "./media-upload-dialog";
+import { MediaDetailDialog } from "./media-detail-dialog";
 import { MediaDeleteDialog } from "./media-delete-dialog";
 import { PAGE_SIZE } from "@/lib/constant";
 import { PageHeader } from "../../Pageheader";
@@ -26,6 +31,7 @@ export function MediaManager() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadKey, setUploadKey] = useState(0);
   const [pendingDelete, setPendingDelete] = useState<Media | null>(null);
+  const [detailMedia, setDetailMedia] = useState<Media | null>(null);
 
   const { data, isLoading, isFetching } = useMedia({
     page,
@@ -37,7 +43,14 @@ export function MediaManager() {
   const pagination = data?.pagination;
 
   const uploadMutation = useUploadMedia();
+  const updateMutation = useUpdateMedia();
   const deleteMutation = useDeleteMedia();
+
+  // Authors may only edit their own uploads; editors and above can edit any.
+  const canEditMedia = (media: Media) => {
+    if (!user || !hasPermission(user.role, "edit_content")) return false;
+    return isRoleAtLeast(user.role, "EDITOR") || media.uploadedById === user.id;
+  };
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -45,12 +58,20 @@ export function MediaManager() {
   }, []);
 
   const handleUpload = useCallback(
-    async (file: File, folder: MediaFolder) => {
-      await uploadMutation.mutateAsync({ file, folder });
+    async (file: File, folder: MediaFolder, metadata: MediaMetadata) => {
+      await uploadMutation.mutateAsync({ file, folder, metadata });
       setUploadKey((k) => k + 1);
       setUploadOpen(false);
     },
     [uploadMutation]
+  );
+
+  const handleSaveDetails = useCallback(
+    async (id: string, metadata: MediaMetadata) => {
+      const updated = await updateMutation.mutateAsync({ id, metadata });
+      setDetailMedia(updated);
+    },
+    [updateMutation]
   );
 
   const handleDeleteConfirm = useCallback(async () => {
@@ -93,6 +114,17 @@ export function MediaManager() {
         onSearchChange={handleSearchChange}
         onPageChange={setPage}
         onDelete={(media) => setPendingDelete(media)}
+        onOpen={(media) => setDetailMedia(media)}
+      />
+
+      {/* Detail / edit dialog */}
+      <MediaDetailDialog
+        open={!!detailMedia}
+        media={detailMedia}
+        canEdit={detailMedia ? canEditMedia(detailMedia) : false}
+        isSaving={updateMutation.isPending}
+        onSave={handleSaveDetails}
+        onClose={() => !updateMutation.isPending && setDetailMedia(null)}
       />
 
       {/* Upload dialog */}

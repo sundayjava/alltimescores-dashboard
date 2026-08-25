@@ -20,6 +20,7 @@ interface MediaGridProps {
     onSearchChange: (value: string) => void;
     onPageChange: (page: number) => void;
     onDelete: (media: Media) => void;
+    onOpen: (media: Media) => void;
 }
 
 export function MediaGrid({
@@ -35,6 +36,7 @@ export function MediaGrid({
     onSearchChange,
     onPageChange,
     onDelete,
+    onOpen,
 }: MediaGridProps) {
     const start = (page - 1) * limit + 1;
     const end = Math.min(page * limit, total);
@@ -75,13 +77,14 @@ export function MediaGrid({
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3">
                         {media.map((item) => (
                             <MediaCard
                                 key={item.id}
                                 media={item}
                                 canDelete={canDelete}
                                 onDelete={onDelete}
+                                onOpen={onOpen}
                             />
                         ))}
                     </div>

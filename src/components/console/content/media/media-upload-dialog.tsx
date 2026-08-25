@@ -2,13 +2,13 @@
 
 import { EntityDialog } from "@/components/console/shared/entity-dialog";
 import { MediaUploadZone } from "./media-upload-zone";
-import { MediaFolder } from "@/types/media";
+import { MediaFolder, MediaMetadata } from "@/types/media";
 
 interface MediaUploadDialogProps {
     open: boolean;
     isPending: boolean;
     progress: number;
-    onUpload: (file: File, folder: MediaFolder) => void;
+    onUpload: (file: File, folder: MediaFolder, metadata: MediaMetadata) => void;
     onClose: () => void;
 }
 

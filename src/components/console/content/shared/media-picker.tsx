@@ -8,8 +8,9 @@ import { MediaItem } from "@/types/content";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/lib/utils";
 import { MediaSelectableGrid } from "../media/media-selectable-grid";
+import { MediaUploadZone } from "../media/media-upload-zone";
 import { useUploadMedia } from "@/hooks/media/use-media-mutations";
-import { MediaFolder, MEDIA_FOLDERS } from "@/types/media";
+import { MediaFolder, MediaMetadata, MEDIA_FOLDERS } from "@/types/media";
 
 interface MediaPickerProps {
   open: boolean;
@@ -35,10 +36,11 @@ export function MediaPicker({
   const uploadMutation = useUploadMedia();
 
   const handleUpload = useCallback(
-    async (file: File, selectedFolder: MediaFolder) => {
-      const result = await uploadMutation.mutateAsync({ 
-        file, 
-        folder: selectedFolder 
+    async (file: File, selectedFolder: MediaFolder, metadata: MediaMetadata) => {
+      const result = await uploadMutation.mutateAsync({
+        file,
+        folder: selectedFolder,
+        metadata,
       });
       // Switch to library tab and auto-select the uploaded media
       setPendingSelection(result);
@@ -112,32 +114,20 @@ export function MediaPicker({
               onSelect={handleSelect}
             />
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="w-full max-w-md">
-                <p className="text-sm text-muted-foreground text-center mb-4">
-                  Upload images to your media library
-                </p>
-                <Button
-                  onClick={() => {
-                    // This will be handled by showing upload dialog inline
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = async (e) => {
-                      const file = (e.target as HTMLInputElement).files?.[0];
-                      if (file) {
-                        await handleUpload(file, folder);
-                      }
-                    };
-                    input.click();
-                  }}
-                  className="w-full gap-2"
-                  disabled={uploadMutation.isPending}
-                >
-                  <Upload className="h-4 w-4" />
-                  {uploadMutation.isPending ? "Uploading..." : "Choose file to upload"}
-                </Button>
-              </div>
+            // Same zone as the media library, with the destination folder already
+            // decided by the caller and the optional details open by default —
+            // alt text and credits are easiest to add at upload time.
+            <div className="h-full overflow-y-auto pr-0.5">
+              <MediaUploadZone
+                key={uploadKey}
+                isPending={uploadMutation.isPending}
+                progress={uploadMutation.progress}
+                defaultFolder={folder}
+                showFolderSelector={false}
+                defaultDetailsOpen
+                submitLabel="Upload to library"
+                onUpload={handleUpload}
+              />
             </div>
           )}
         </div>

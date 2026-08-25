@@ -24,6 +24,38 @@ export interface MediaUploadedBy {
   email?: string;
 }
 
+// Optional attribution/description fields accepted on upload (multipart) and on
+// PATCH (JSON). Max lengths mirror the server's validation so we can catch
+// over-long values client-side instead of taking a 400.
+export const MEDIA_METADATA_MAX_LENGTH = {
+  alt: 300,
+  caption: 500,
+  description: 2000,
+  sourceLabel: 200,
+  sourceUrl: 2048,
+  licenseLabel: 200,
+  licenseUrl: 2048,
+} as const;
+
+export type MediaMetadataField = keyof typeof MEDIA_METADATA_MAX_LENGTH;
+
+export const MEDIA_METADATA_FIELDS = Object.keys(
+  MEDIA_METADATA_MAX_LENGTH
+) as MediaMetadataField[];
+
+/** Values to send. "" is meaningful: it clears the field (stored as NULL). */
+export type MediaMetadata = Partial<Record<MediaMetadataField, string>>;
+
+export const EMPTY_MEDIA_METADATA: Required<MediaMetadata> = {
+  alt: "",
+  caption: "",
+  description: "",
+  sourceLabel: "",
+  sourceUrl: "",
+  licenseLabel: "",
+  licenseUrl: "",
+};
+
 export interface Media {
   id: string;
   fileName: string;
@@ -36,6 +68,11 @@ export interface Media {
   url: string;
   alt?: string | null;
   caption?: string | null;
+  description?: string | null;
+  sourceLabel?: string | null;
+  sourceUrl?: string | null;
+  licenseLabel?: string | null;
+  licenseUrl?: string | null;
   folder: string;
   isPublic: boolean;
   uploadedById: string;

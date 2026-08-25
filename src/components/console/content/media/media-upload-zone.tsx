@@ -1,16 +1,21 @@
 "use client";
 
 import { useState, useCallback, useRef, DragEvent } from "react";
-import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
+import { Upload, X, ImageIcon, Loader2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { validateMediaMetadata } from "@/lib/media-metadata";
 import {
     MediaFolder,
+    MediaMetadata,
+    MediaMetadataField,
     MEDIA_FOLDERS,
     ALLOWED_IMAGE_TYPES,
     MAX_IMAGE_SIZE,
+    EMPTY_MEDIA_METADATA,
 } from "@/types/media";
+import { MediaMetadataFields } from "./media-metadata-fields";
 
 const FOLDER_OPTIONS: { value: MediaFolder; label: string }[] = [
     { value: MEDIA_FOLDERS.CONTENTS, label: "Contents" },
@@ -28,16 +33,65 @@ function formatSize(bytes: number): string {
 interface MediaUploadZoneProps {
     isPending: boolean;
     progress: number;
-    onUpload: (file: File, folder: MediaFolder) => void;
+    onUpload: (file: File, folder: MediaFolder, metadata: MediaMetadata) => void;
+    /** Folder the upload lands in. Also the initial value of the picker below. */
+    defaultFolder?: MediaFolder;
+    /** Hide the folder buttons when the caller already knows the destination. */
+    showFolderSelector?: boolean;
+    /** Start with the optional details section expanded. */
+    defaultDetailsOpen?: boolean;
+    /** Rendered above the upload button — e.g. a "cancel" action. */
+    footer?: React.ReactNode;
+    submitLabel?: string;
 }
 
-export function MediaUploadZone({ isPending, progress, onUpload }: MediaUploadZoneProps) {
+export function MediaUploadZone({
+    isPending,
+    progress,
+    onUpload,
+    defaultFolder = MEDIA_FOLDERS.CONTENTS,
+    showFolderSelector = true,
+    defaultDetailsOpen = false,
+    footer,
+    submitLabel = "Upload",
+}: MediaUploadZoneProps) {
     const [dragOver, setDragOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-    const [folder, setFolder] = useState<MediaFolder>(MEDIA_FOLDERS.CONTENTS);
+    const [folder, setFolder] = useState<MediaFolder>(defaultFolder);
     const [error, setError] = useState<string | null>(null);
+    const [metadata, setMetadata] = useState<Required<MediaMetadata>>({
+        ...EMPTY_MEDIA_METADATA,
+    });
+    const [metadataErrors, setMetadataErrors] = useState<
+        Partial<Record<MediaMetadataField, string>>
+    >({});
+    const [detailsOpen, setDetailsOpen] = useState(defaultDetailsOpen);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    const handleMetadataChange = useCallback(
+        (field: MediaMetadataField, value: string) => {
+            setMetadata((prev) => ({ ...prev, [field]: value }));
+            setMetadataErrors((prev) =>
+                prev[field] ? { ...prev, [field]: undefined } : prev
+            );
+        },
+        []
+    );
+
+    const handleSubmit = () => {
+        if (!selectedFile) return;
+
+        const errors = validateMediaMetadata(metadata);
+        if (Object.keys(errors).length > 0) {
+            setMetadataErrors(errors);
+            setDetailsOpen(true);
+            return;
+        }
+
+        // Blank values are fine to send — the server stores them as NULL.
+        onUpload(selectedFile, folder, metadata);
+    };
 
     const validate = (file: File): string | null => {
         if (!ALLOWED_IMAGE_TYPES.has(file.type))
@@ -151,7 +205,7 @@ export function MediaUploadZone({ isPending, progress, onUpload }: MediaUploadZo
             {error && <p className="text-xs text-destructive">{error}</p>}
 
             {/* Folder selector */}
-            <div className="space-y-2">
+            <div className={cn("space-y-2", !showFolderSelector && "hidden")}>
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Folder
                 </Label>
@@ -174,19 +228,54 @@ export function MediaUploadZone({ isPending, progress, onUpload }: MediaUploadZo
                 </div>
             </div>
 
-            <Button
-                size="sm"
-                onClick={() => selectedFile && onUpload(selectedFile, folder)}
-                disabled={!selectedFile || isPending}
-                className="w-full gap-2"
-            >
-                {isPending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                    <Upload className="h-3.5 w-3.5" />
+            {/* Image details — all optional, collapsed until wanted */}
+            <div className="rounded-lg border border-border">
+                <button
+                    type="button"
+                    onClick={() => setDetailsOpen((open) => !open)}
+                    aria-expanded={detailsOpen}
+                    className="flex w-full items-center justify-between px-3 py-2.5 text-left"
+                >
+                    <span className="text-xs font-medium text-foreground">
+                        Image details{" "}
+                        <span className="font-normal text-muted-foreground">· optional</span>
+                    </span>
+                    <ChevronDown
+                        className={cn(
+                            "h-3.5 w-3.5 text-muted-foreground transition-transform",
+                            detailsOpen && "rotate-180"
+                        )}
+                    />
+                </button>
+
+                {detailsOpen && (
+                    <div className="border-t border-border px-3 py-3">
+                        <MediaMetadataFields
+                            values={metadata}
+                            errors={metadataErrors}
+                            disabled={isPending}
+                            onChange={handleMetadataChange}
+                        />
+                    </div>
                 )}
-                {isPending ? "Uploading…" : "Upload"}
-            </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+                {footer}
+                <Button
+                    size="sm"
+                    onClick={handleSubmit}
+                    disabled={!selectedFile || isPending}
+                    className="flex-1 gap-2"
+                >
+                    {isPending ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                        <Upload className="h-3.5 w-3.5" />
+                    )}
+                    {isPending ? "Uploading…" : submitLabel}
+                </Button>
+            </div>
         </div>
     );
 }
