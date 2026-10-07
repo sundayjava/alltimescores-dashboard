@@ -21,7 +21,7 @@ interface SidebarRightProps {
     errors: Record<string, { message?: string }>;
     categories: CategoryStub[];
     contentTypes: ContentTypeStub[];
-    availableTags: TagStub[];
+    knownTags: TagStub[];
     authors: UserStub[];
     coverImage: MediaItem | null;
     onCoverImageChange: (media: MediaItem | null) => void;
@@ -69,7 +69,7 @@ export function SidebarRight({
     errors,
     categories,
     contentTypes,
-    availableTags,
+    knownTags,
     authors,
     coverImage,
     onCoverImageChange,
@@ -133,7 +133,7 @@ export function SidebarRight({
                 </Panel>
 
                 <Panel title="Tags" defaultOpen>
-                    <PanelTags control={control} availableTags={availableTags} />
+                    <PanelTags control={control} knownTags={knownTags} />
                 </Panel>
 
                 <Panel title="Settings" defaultOpen>

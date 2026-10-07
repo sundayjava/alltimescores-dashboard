@@ -9,7 +9,6 @@ import { contentSchema, ContentSchema } from "@/schemas/content.schema";
 import { Content, MediaItem } from "@/types/content";
 import { useContent, useContentTypes } from "@/hooks/content/use-contents";
 import { useAllCategories } from "@/hooks/categories/use-categories";
-import { useTags } from "@/hooks/tags/use-tags";
 import {
     useCreateContent,
     useUpdateContent,
@@ -42,15 +41,10 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
     // ── Fetch supporting data ─────────────────────────────────────────────────
     const { data: categoriesData } = useAllCategories();
     const { data: contentTypesData } = useContentTypes();
-    const { data: tagsData } = useTags({ limit: 100 });
 
     const categories = categoriesData?.data ?? [];
     const contentTypes = contentTypesData?.data ?? [];
-    const availableTags = (tagsData?.data ?? []).map((t) => ({
-        id: t.id,
-        name: t.name,
-        slug: t.slug,
-    }));
+    const knownTags = (existingContent?.tags ?? []).map((t) => t.tag);
 
     // ── Cover image local state ───────────────────────────────────────────────
     const [coverImage, setCoverImage] = useState<MediaItem | null>(
@@ -258,7 +252,7 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
                     errors={errors as Record<string, { message?: string }>}
                     categories={categories}
                     contentTypes={contentTypes}
-                    availableTags={availableTags}
+                    knownTags={knownTags}
                     authors={authors}
                     coverImage={coverImage}
                     onCoverImageChange={setCoverImage}
