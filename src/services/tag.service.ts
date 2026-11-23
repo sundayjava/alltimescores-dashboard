@@ -5,6 +5,7 @@ import {
   CreateTagRequest,
   UpdateTagRequest,
   TagQueryParams,
+  BulkTagsResponse,
 } from "@/types/tag";
 
 const BASE = "/cms/tags";
@@ -34,5 +35,10 @@ export async function updateTag(
 
 export async function deleteTag(id: string): Promise<{ success: boolean }> {
   const { data } = await api.delete<{ success: boolean }>(`${BASE}/${id}`);
+  return data;
+}
+
+export async function bulkTags(names: string[]): Promise<BulkTagsResponse> {
+  const { data } = await api.post<BulkTagsResponse>(`${BASE}/bulk`, { names });
   return data;
 }

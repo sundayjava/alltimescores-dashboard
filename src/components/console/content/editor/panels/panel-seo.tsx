@@ -38,8 +38,6 @@ function CharCount({
 }
 
 export function PanelSeo({ control, register }: PanelSeoProps) {
-    const seoTitle = useWatch({ control, name: "seo.seoTitle" }) ?? "";
-    const metaDesc = useWatch({ control, name: "seo.metaDescription" }) ?? "";
     const ogTitle = useWatch({ control, name: "seo.ogTitle" }) ?? "";
     const ogDesc = useWatch({ control, name: "seo.ogDescription" }) ?? "";
     const twitterTitle = useWatch({ control, name: "seo.twitterTitle" }) ?? "";
@@ -53,10 +51,7 @@ export function PanelSeo({ control, register }: PanelSeoProps) {
                     Meta
                 </p>
                 <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-xs text-muted-foreground">SEO title</Label>
-                        <CharCount value={seoTitle} max={60} warn={50} />
-                    </div>
+                    <Label className="text-xs text-muted-foreground">SEO title</Label>
                     <Input
                         {...register("seo.seoTitle")}
                         placeholder="SEO page title…"
@@ -64,10 +59,7 @@ export function PanelSeo({ control, register }: PanelSeoProps) {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-xs text-muted-foreground">Meta description</Label>
-                        <CharCount value={metaDesc} max={160} warn={140} />
-                    </div>
+                    <Label className="text-xs text-muted-foreground">Meta description</Label>
                     <textarea
                         {...register("seo.metaDescription")}
                         rows={3}

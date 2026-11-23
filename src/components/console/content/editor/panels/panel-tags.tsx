@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, Control } from "react-hook-form";
 import { X, Search, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { bulkTags } from "@/services/tag.service";
+import { TAG_KEYS } from "@/hooks/tags/use-tags";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ContentSchema } from "@/schemas/content.schema";
@@ -20,6 +25,9 @@ interface PanelTagsProps {
 export function PanelTags({ control, knownTags = [] }: PanelTagsProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [newTags, setNewTags] = useState("");
+  const [adding, setAdding] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
@@ -46,6 +54,39 @@ export function PanelTags({ control, knownTags = [] }: PanelTagsProps) {
   const tagCache = useRef(new Map<string, TagStub>());
   for (const t of knownTags) tagCache.current.set(t.id, t);
   for (const t of filtered) tagCache.current.set(t.id, t);
+
+  // Split pasted/typed text on commas or newlines, resolve every name to a tag
+  // (existing ones are reused, missing ones created) and select them all.
+  const addTags = async (
+    selectedIds: string[],
+    onChange: (ids: string[]) => void
+  ) => {
+    const names = newTags
+      .split(/[,\n]/)
+      .map((n) => n.trim())
+      .filter(Boolean);
+    if (names.length === 0 || adding) return;
+
+    setAdding(true);
+    try {
+      const { data } = await bulkTags(names);
+      for (const t of data) tagCache.current.set(t.id, t);
+      const merged = [...selectedIds];
+      for (const t of data) if (!merged.includes(t.id)) merged.push(t.id);
+      onChange(merged);
+      setNewTags("");
+      queryClient.invalidateQueries({ queryKey: TAG_KEYS.all });
+      const created = data.filter((t) => t.created).length;
+      toast.success(
+        `${data.length} tag${data.length !== 1 ? "s" : ""} added` +
+          (created ? ` (${created} new)` : "")
+      );
+    } catch {
+      toast.error("Failed to add tags. Please try again.");
+    } finally {
+      setAdding(false);
+    }
+  };
 
   const total = tagsData?.pagination?.total ?? filtered.length;
   const hasMore = total > filtered.length;
@@ -96,6 +137,42 @@ export function PanelTags({ control, knownTags = [] }: PanelTagsProps) {
                   ))}
                 </div>
               )}
+
+              {/* Add tags (comma separated) */}
+              <div className="space-y-1">
+                <div className="flex gap-1">
+                  <Input
+                    placeholder="Add tags, separated by commas"
+                    value={newTags}
+                    disabled={adding}
+                    onChange={(e) => setNewTags(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); // don't submit the post form
+                        addTags(selectedIds, field.onChange);
+                      }
+                    }}
+                    className="h-7 rounded-none text-xs"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={adding || !newTags.trim()}
+                    onClick={() => addTags(selectedIds, field.onChange)}
+                    className="h-7 rounded-none px-3 text-xs"
+                  >
+                    {adding ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      "Add"
+                    )}
+                  </Button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Paste a comma-separated list. Existing tags are reused, not duplicated.
+                </p>
+              </div>
 
               {/* Search */}
               <div className="relative">

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const seoSchema = z.object({
-  seoTitle: z.string().trim().max(60).optional().or(z.literal("")),
-  metaDescription: z.string().trim().max(160).optional().or(z.literal("")),
-  focusKeyword: z.string().trim().max(100).optional().or(z.literal("")),
+  seoTitle: z.string().trim().optional().or(z.literal("")),
+  metaDescription: z.string().trim().optional().or(z.literal("")),
+  focusKeyword: z.string().trim().optional().or(z.literal("")),
   canonicalUrl: z.string().trim().url("Must be a valid URL.").optional().or(z.literal("")),
   ogTitle: z.string().trim().max(60).optional().or(z.literal("")),
   ogDescription: z.string().trim().max(160).optional().or(z.literal("")),

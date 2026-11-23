@@ -37,3 +37,7 @@ export interface TagQueryParams {
   limit?: number;
   search?: string;
 }
+
+export interface BulkTagsResponse {
+  data: { id: string; name: string; slug: string; created: boolean }[];
+}

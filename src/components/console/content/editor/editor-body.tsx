@@ -601,7 +601,7 @@ export function EditorBody({
                     </button>
                 </div>
 
-                {/* Title & Excerpt Header */}
+                {/* Title Header */}
                 <div className="border-b border-border bg-background">
                     <div className="px-8 pt-8 pb-4 max-w-4xl mx-auto w-full">
                         <textarea
@@ -623,18 +623,6 @@ export function EditorBody({
                         {errors.title && (
                             <p className="text-xs text-destructive mt-1">{errors.title.message}</p>
                         )}
-
-                        {/* Excerpt */}
-                        <textarea
-                            {...register("excerpt")}
-                            placeholder="Write an excerpt (optional)…"
-                            rows={2}
-                            className={cn(
-                                "w-full resize-none bg-transparent text-base text-muted-foreground leading-relaxed mt-3",
-                                "placeholder:text-muted-foreground/30 focus:outline-none",
-                                "border-0 p-0 shadow-none ring-0"
-                            )}
-                        />
                     </div>
                 </div>
 
