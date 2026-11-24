@@ -34,7 +34,7 @@ interface EditorBodyProps {
     register: UseFormRegister<ContentSchema>;
     setValue: UseFormSetValue<ContentSchema>;
     control: Control<ContentSchema>;
-    errors: { title?: { message?: string }; content?: { message?: string }; excerpt?: { message?: string } };
+    errors: { title?: { message?: string }; slug?: { message?: string }; content?: { message?: string }; excerpt?: { message?: string } };
 }
 
 interface ToolbarItemProps {
@@ -622,6 +622,33 @@ export function EditorBody({
                         />
                         {errors.title && (
                             <p className="text-xs text-destructive mt-1">{errors.title.message}</p>
+                        )}
+
+                        {/* The page address. Blank = built from the title. */}
+                        <div className="mt-3 flex items-center gap-2 text-sm">
+                            <label htmlFor="content-slug" className="shrink-0 text-muted-foreground">
+                                Slug
+                            </label>
+                            <input
+                                id="content-slug"
+                                {...register("slug")}
+                                placeholder="Leave blank to generate from the title"
+                                autoComplete="off"
+                                spellCheck={false}
+                                className={cn(
+                                    "min-w-0 flex-1 border-0 border-b border-border bg-transparent px-0 py-1 font-mono text-sm",
+                                    "placeholder:font-sans placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none",
+                                    errors.slug && "border-destructive"
+                                )}
+                            />
+                        </div>
+                        {errors.slug ? (
+                            <p className="text-xs text-destructive mt-1">{errors.slug.message}</p>
+                        ) : (
+                            <p className="text-xs text-muted-foreground/70 mt-1">
+                                Changing the slug of a published article changes its address; links and
+                                Google results to the old one will stop working.
+                            </p>
                         )}
                     </div>
                 </div>

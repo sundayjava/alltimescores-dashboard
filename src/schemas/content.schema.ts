@@ -4,7 +4,6 @@ export const seoSchema = z.object({
   seoTitle: z.string().trim().optional().or(z.literal("")),
   metaDescription: z.string().trim().optional().or(z.literal("")),
   focusKeyword: z.string().trim().optional().or(z.literal("")),
-  canonicalUrl: z.string().trim().url("Must be a valid URL.").optional().or(z.literal("")),
   ogTitle: z.string().trim().max(60).optional().or(z.literal("")),
   ogDescription: z.string().trim().max(160).optional().or(z.literal("")),
   twitterTitle: z.string().trim().max(60).optional().or(z.literal("")),
@@ -19,6 +18,14 @@ export const contentSchema = z.object({
     .trim()
     .min(5, "Title must be at least 5 characters.")
     .max(255, "Title must be under 255 characters."),
+
+  // Blank means "build it from the title" (or, on an existing article, "keep it").
+  slug: z
+    .string()
+    .trim()
+    .max(200, "Slug must be under 200 characters.")
+    .optional()
+    .or(z.literal("")),
 
   excerpt: z
     .string()

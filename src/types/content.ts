@@ -146,6 +146,8 @@ export interface SeoRequest {
 
 export interface CreateContentRequest {
   title: string;
+  /** Optional: the server builds one from the title when omitted. */
+  slug?: string;
   excerpt?: string;
   content: string;
   categoryId: string;

@@ -66,6 +66,7 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
         resolver: zodResolver(contentSchema),
         defaultValues: {
             title: "",
+            slug: "",
             excerpt: "",
             content: "",
             categoryId: "",
@@ -82,7 +83,6 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
                 seoTitle: "",
                 metaDescription: "",
                 focusKeyword: "",
-                canonicalUrl: "",
                 ogTitle: "",
                 ogDescription: "",
                 twitterTitle: "",
@@ -98,6 +98,7 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
         if (!existingContent) return;
         reset({
             title: existingContent.title,
+            slug: existingContent.slug ?? "",
             excerpt: existingContent.excerpt ?? "",
             content: existingContent.content,
             categoryId: existingContent.categoryId,
@@ -114,7 +115,6 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
                 seoTitle: existingContent.seoMetadata?.seoTitle ?? "",
                 metaDescription: existingContent.seoMetadata?.metaDescription ?? "",
                 focusKeyword: existingContent.seoMetadata?.focusKeyword ?? "",
-                canonicalUrl: existingContent.seoMetadata?.canonicalUrl ?? "",
                 ogTitle: existingContent.seoMetadata?.ogTitle ?? "",
                 ogDescription: existingContent.seoMetadata?.ogDescription ?? "",
                 twitterTitle: existingContent.seoMetadata?.twitterTitle ?? "",
@@ -141,6 +141,8 @@ export function ContentEditorPage({ contentId }: ContentEditorPageProps) {
     const cleanPayload = (values: ContentSchema) => ({
         ...values,
         excerpt: values.excerpt || undefined,
+        // Blank: the server generates one (new) or keeps the current one.
+        slug: values.slug?.trim() || undefined,
         coverImageId: values.coverImageId || undefined,
         seo: values.seo
             ? Object.fromEntries(

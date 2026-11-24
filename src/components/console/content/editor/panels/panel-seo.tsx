@@ -43,14 +43,6 @@ export function PanelSeo({ control, register }: PanelSeoProps) {
                         className="h-8 rounded-none text-sm"
                     />
                 </div>
-                <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Canonical URL</Label>
-                    <Input
-                        {...register("seo.canonicalUrl")}
-                        placeholder="https://…"
-                        className="h-8 rounded-none text-sm font-mono"
-                    />
-                </div>
             </div>
 
             {/* Indexing */}

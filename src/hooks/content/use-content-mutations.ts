@@ -12,6 +12,7 @@ import {
 } from "@/services/content.service";
 import { uploadMedia } from "@/services/media.service";
 import { CreateContentRequest, UpdateContentRequest } from "@/types/content";
+import { getApiErrorMessage } from "@/lib/error-handler";
 import { CONTENT_KEYS } from "./use-contents";
 
 export function useCreateContent() {
@@ -22,8 +23,9 @@ export function useCreateContent() {
       queryClient.invalidateQueries({ queryKey: CONTENT_KEYS.all });
       toast.success(`"${response.title}" saved as draft.`);
     },
-    onError: () => {
-      toast.error("Failed to create content. Please try again.");
+    // The server's reason (e.g. "slug already used") beats a generic failure.
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Failed to save. Please try again."));
     },
   });
 }
@@ -40,8 +42,8 @@ export function useUpdateContent() {
       });
       toast.success("Changes saved.");
     },
-    onError: () => {
-      toast.error("Failed to save changes.");
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, "Failed to save. Please try again."));
     },
   });
 }
